@@ -4,16 +4,14 @@ using UnityEngine;
 public class BallPhysicsComponent : MonoBehaviour
 {
   public enum BallState { Held, Serving, Waiting, Active }
-
   public BallState ballState = BallState.Held;
-  public float serveForce = 5f;
-
-  private Rigidbody rb;
+  [SerializeField] private float _serveForce = 5f;
+  private Rigidbody _rb;
 
   void Start()
   {
-    rb = GetComponent<Rigidbody>();
-    rb.useGravity = false; // We'll enable it when serving
+    _rb = GetComponent<Rigidbody>();
+    _rb.useGravity = false;
   }
 
   void Update()
@@ -21,8 +19,8 @@ public class BallPhysicsComponent : MonoBehaviour
     switch (ballState)
     {
       case BallState.Held:
-        rb.velocity = Vector3.zero;
-        rb.useGravity = false;
+        _rb.velocity = Vector3.zero;
+        _rb.useGravity = false;
 
         // if (controller button is pushed)
         // {
@@ -35,11 +33,11 @@ public class BallPhysicsComponent : MonoBehaviour
         break;
 
       case BallState.Waiting:
-        // maybe check for user interaction here
+        // check for user interaction here
         break;
 
       case BallState.Active:
-        // physics engine handles this
+        _rb.useGravity = true;
         break;
     }
   }
@@ -55,17 +53,17 @@ public class BallPhysicsComponent : MonoBehaviour
 
   public void ServeBall()
   {
-    rb.useGravity = true;
-    rb.velocity = Vector3.up * serveForce;
+    _rb.useGravity = true;
+    _rb.velocity = Vector3.up * _serveForce;
     ballState = BallState.Waiting;
   }
 
   public void ResetBall(Vector3 position)
   {
     transform.position = position;
-    rb.velocity = Vector3.zero;
-    rb.angularVelocity = Vector3.zero;
-    rb.useGravity = false;
+    _rb.velocity = Vector3.zero;
+    _rb.angularVelocity = Vector3.zero;
+    _rb.useGravity = false;
     ballState = BallState.Held;
   }
 }
