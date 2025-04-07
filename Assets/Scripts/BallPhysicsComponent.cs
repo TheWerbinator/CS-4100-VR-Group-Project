@@ -1,14 +1,16 @@
 using UnityEngine;
+using Unity.Netcode;
 
 [RequireComponent(typeof(Rigidbody))]
-public class BallPhysicsComponent : MonoBehaviour
+public class BallPhysicsComponent : NetworkBehaviour 
 {
   public enum BallState { Held, Serving, Waiting, Active }
   public BallState ballState = BallState.Held;
   [SerializeField] private float _serveForce = 5f;
   private Rigidbody _rb;
 
-  void Start()
+
+  public override void OnNetworkSpawn()
   {
     _rb = GetComponent<Rigidbody>();
     _rb.useGravity = false;
@@ -16,7 +18,12 @@ public class BallPhysicsComponent : MonoBehaviour
 
   void Update()
   {
-    switch (ballState)
+    if (!IsOwner)
+    {
+        return;
+    }
+
+        switch (ballState)
     {
       case BallState.Held:
         _rb.velocity = Vector3.zero;
@@ -44,7 +51,11 @@ public class BallPhysicsComponent : MonoBehaviour
 
   void OnCollisionEnter(Collision collision)
   {
-    Debug.Log(collision.gameObject);
+    if (!IsOwner)
+    {
+        return;
+    }
+        Debug.Log(collision.gameObject);
     if (collision.gameObject.CompareTag("Paddle"))
     {
       ballState = BallState.Active;
@@ -53,6 +64,10 @@ public class BallPhysicsComponent : MonoBehaviour
 
   public void ServeBall()
   {
+    if (!IsOwner)
+    {
+        return;
+    }
     _rb.useGravity = true;
     _rb.velocity = Vector3.up * _serveForce;
     ballState = BallState.Waiting;
@@ -60,6 +75,10 @@ public class BallPhysicsComponent : MonoBehaviour
 
   public void ResetBall(Vector3 position)
   {
+    if (!IsOwner)
+    {
+        return;
+    }
     transform.position = position;
     _rb.velocity = Vector3.zero;
     _rb.angularVelocity = Vector3.zero;
