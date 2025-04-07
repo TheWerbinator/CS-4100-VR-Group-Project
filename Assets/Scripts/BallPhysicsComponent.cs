@@ -3,9 +3,9 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 public class BallPhysicsComponent : MonoBehaviour
 {
-  public enum BallState { Held, Serving, Waiting, Active }
-  public BallState ballState = BallState.Held;
   [SerializeField] private float _serveForce = 5f;
+  private enum _BallState { Held, Serving, Waiting, Active }
+  private _BallState _ballState = _BallState.Held;
   private Rigidbody _rb;
 
   void Start()
@@ -16,9 +16,9 @@ public class BallPhysicsComponent : MonoBehaviour
 
   void Update()
   {
-    switch (ballState)
+    switch (_ballState)
     {
-      case BallState.Held:
+      case _BallState.Held:
         _rb.velocity = Vector3.zero;
         _rb.useGravity = false;
 
@@ -28,15 +28,17 @@ public class BallPhysicsComponent : MonoBehaviour
         // }
         break;
 
-      case BallState.Serving:
-        ServeBall();
+      case _BallState.Serving:
+        _rb.useGravity = true;
+        _rb.velocity = Vector3.up * _serveForce;
+        _ballState = _BallState.Waiting;
         break;
 
-      case BallState.Waiting:
-        // check for user interaction here
+      case _BallState.Waiting:
+        // insert check for user interaction here
         break;
 
-      case BallState.Active:
+      case _BallState.Active:
         _rb.useGravity = true;
         break;
     }
@@ -47,15 +49,8 @@ public class BallPhysicsComponent : MonoBehaviour
     Debug.Log(collision.gameObject);
     if (collision.gameObject.CompareTag("Paddle"))
     {
-      ballState = BallState.Active;
+      _ballState = _BallState.Active;
     }
-  }
-
-  public void ServeBall()
-  {
-    _rb.useGravity = true;
-    _rb.velocity = Vector3.up * _serveForce;
-    ballState = BallState.Waiting;
   }
 
   public void ResetBall(Vector3 position)
@@ -64,6 +59,6 @@ public class BallPhysicsComponent : MonoBehaviour
     _rb.velocity = Vector3.zero;
     _rb.angularVelocity = Vector3.zero;
     _rb.useGravity = false;
-    ballState = BallState.Held;
+    _ballState = _BallState.Held;
   }
 }
