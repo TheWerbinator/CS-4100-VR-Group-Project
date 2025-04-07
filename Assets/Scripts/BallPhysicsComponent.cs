@@ -9,6 +9,7 @@ public class BallPhysicsComponent : NetworkBehaviour
   [SerializeField] private float _serveForce = 5f;
   private Rigidbody _rb;
 
+
   public override void OnNetworkSpawn()
   {
     _rb = GetComponent<Rigidbody>();
