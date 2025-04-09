@@ -951,7 +951,7 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 20d199f1c58a791458a043fe1d3133a2, type: 2}
     - target: {fileID: 919132149155446097, guid: fa4f7eaae2cc172428e8948c0b11bb33, type: 3}
       propertyPath: m_Name
-      value: ping_pong_table
+      value: Table
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fa4f7eaae2cc172428e8948c0b11bb33, type: 3}
@@ -1036,4 +1036,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ballState: 0
-  serveForce: 5
+  _serveForce: 5

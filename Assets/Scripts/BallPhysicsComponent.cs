@@ -2,7 +2,7 @@ using UnityEngine;
 using Unity.Netcode;
 
 [RequireComponent(typeof(Rigidbody))]
-public class BallPhysicsComponent : NetworkBehaviour 
+public class BallPhysicsComponent : NetworkBehaviour
 {
   public enum BallState { Held, Serving, Waiting, Active }
   public BallState ballState = BallState.Held;
@@ -20,10 +20,10 @@ public class BallPhysicsComponent : NetworkBehaviour
   {
     if (!IsOwner)
     {
-        return;
+      return;
     }
 
-        switch (ballState)
+    switch (ballState)
     {
       case BallState.Held:
         _rb.velocity = Vector3.zero;
@@ -40,7 +40,7 @@ public class BallPhysicsComponent : NetworkBehaviour
         break;
 
       case BallState.Waiting:
-        // check for user interaction here
+        // insert check for user interaction here
         break;
 
       case BallState.Active:
@@ -53,9 +53,10 @@ public class BallPhysicsComponent : NetworkBehaviour
   {
     if (!IsOwner)
     {
-        return;
+      return;
     }
-        Debug.Log(collision.gameObject);
+
+    Debug.Log(collision.gameObject);
     if (collision.gameObject.CompareTag("Paddle"))
     {
       ballState = BallState.Active;
@@ -66,7 +67,7 @@ public class BallPhysicsComponent : NetworkBehaviour
   {
     if (!IsOwner)
     {
-        return;
+      return;
     }
     _rb.useGravity = true;
     _rb.velocity = Vector3.up * _serveForce;
@@ -77,7 +78,7 @@ public class BallPhysicsComponent : NetworkBehaviour
   {
     if (!IsOwner)
     {
-        return;
+      return;
     }
     transform.position = position;
     _rb.velocity = Vector3.zero;
