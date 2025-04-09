@@ -5,10 +5,10 @@ using Unity.Netcode;
 
 public class NetworkPlayer : NetworkBehaviour
 {
-    public Transform root;
-    public Transform head;
-    public Transform leftHand;
-    public Transform rightHand;
+    [SerializeField] private Transform root;
+    [SerializeField] private Transform head;
+    [SerializeField] private Transform leftHand;
+    [SerializeField] private Transform rightHand;
 
     public Renderer[] meshToDisable;
 
