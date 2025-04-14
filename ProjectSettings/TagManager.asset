@@ -6,6 +6,8 @@ TagManager:
   tags:
   - Paddle
   - Floor
+  - Anchor
+  - NetAirspace
   layers:
   - Default
   - TransparentFX
