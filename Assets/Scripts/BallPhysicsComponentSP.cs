@@ -59,8 +59,6 @@ public class BallPhysicsComponentSP : NetworkBehaviour
 
   void OnCollisionEnter(Collision collision)
   {
-    // if (!IsOwner) return;
-
     if (collision.gameObject.CompareTag("Home")) _lastSide = "Home";
     if (collision.gameObject.CompareTag("Guest")) _lastSide = "Guest";
     if (collision.gameObject.CompareTag("BackBoard")) _lastSide = "BackBoard";
