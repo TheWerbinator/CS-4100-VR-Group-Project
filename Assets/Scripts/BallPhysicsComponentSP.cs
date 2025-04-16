@@ -2,7 +2,7 @@ using UnityEngine;
 using Unity.Netcode;
 
 [RequireComponent(typeof(Rigidbody))]
-public class BallPhysicsComponent : NetworkBehaviour
+public class BallPhysicsComponentSP : NetworkBehaviour
 {
   public enum BallState { Held, Serving, Waiting, Active }
   public BallState ballState = BallState.Held;
@@ -11,23 +11,17 @@ public class BallPhysicsComponent : NetworkBehaviour
   private string _lastSide = "Home";
   private Rigidbody _rigidbody;
   private Vector3 _opponentDirection = Vector3.forward;
-
+  private Vector3 _initialPosition;
 
   void Start()
   {
-    _rigidbody = GetComponent<Rigidbody>();
-    _rigidbody.useGravity = false;
-  }
-
-  public override void OnNetworkSpawn()
-  {
+    _initialPosition = transform.position;
     _rigidbody = GetComponent<Rigidbody>();
     _rigidbody.useGravity = false;
   }
 
   void Update()
   {
-    // if (!IsOwner) return;
     UpdateBall();
   }
   void UpdateBall()
@@ -69,9 +63,11 @@ public class BallPhysicsComponent : NetworkBehaviour
 
     if (collision.gameObject.CompareTag("Home")) _lastSide = "Home";
     if (collision.gameObject.CompareTag("Guest")) _lastSide = "Guest";
+    if (collision.gameObject.CompareTag("BackBoard")) _lastSide = "BackBoard";
     if (collision.gameObject.CompareTag("Floor"))
     {
-      if (_lastSide == "Guest")
+      ResetBall();
+      if (_lastSide == "BackBoard")
       {
         ScoreManager.AddScoreHome();
       }
@@ -82,16 +78,14 @@ public class BallPhysicsComponent : NetworkBehaviour
 
   public void ServeBall()
   {
-    // if (!IsOwner) return;
     _rigidbody.useGravity = true;
     _rigidbody.velocity = Vector3.up * _serveForce;
     ballState = BallState.Waiting;
   }
 
-  public void ResetBall(Vector3 position)
+  public void ResetBall()
   {
-    // if (!IsOwner) return;
-    transform.position = position;
+    transform.position = _initialPosition;
     _rigidbody.velocity = Vector3.zero;
     _rigidbody.angularVelocity = Vector3.zero;
     _rigidbody.useGravity = false;
