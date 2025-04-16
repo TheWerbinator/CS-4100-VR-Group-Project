@@ -6,6 +6,10 @@ TagManager:
   tags:
   - Paddle
   - Floor
+  - Anchor
+  - BackBoard
+  - Home
+  - Guest
   layers:
   - Default
   - TransparentFX
