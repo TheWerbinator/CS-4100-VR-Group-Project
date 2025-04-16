@@ -11,23 +11,17 @@ public class BallPhysicsComponent : NetworkBehaviour
   private string _lastSide = "Home";
   private Rigidbody _rigidbody;
   private Vector3 _opponentDirection = Vector3.forward;
-
+  private Vector3 _initialPosition;
 
   void Start()
   {
-    _rigidbody = GetComponent<Rigidbody>();
-    _rigidbody.useGravity = false;
-  }
-
-  public override void OnNetworkSpawn()
-  {
+    _initialPosition = transform.position;
     _rigidbody = GetComponent<Rigidbody>();
     _rigidbody.useGravity = false;
   }
 
   void Update()
   {
-    // if (!IsOwner) return;
     UpdateBall();
   }
   void UpdateBall()
@@ -47,8 +41,8 @@ public class BallPhysicsComponent : NetworkBehaviour
   {
     if (ballState == BallState.Active && Vector3.Dot(_rigidbody.velocity, _opponentDirection) > 0)
     {
-      float correctiveForceX = -transform.position.z * assistStrength;
-      Vector3 correctiveForce = new Vector3(correctiveForceX, 0, 0);
+      float correctiveForceZ = -transform.position.z * assistStrength;
+      Vector3 correctiveForce = new Vector3(correctiveForceZ, 0, 0);
       _rigidbody.AddForce(correctiveForce, ForceMode.Acceleration);
     }
   }
@@ -65,13 +59,14 @@ public class BallPhysicsComponent : NetworkBehaviour
 
   void OnCollisionEnter(Collision collision)
   {
-    // if (!IsOwner) return;
-
+    if (!IsOwner) return;
     if (collision.gameObject.CompareTag("Home")) _lastSide = "Home";
     if (collision.gameObject.CompareTag("Guest")) _lastSide = "Guest";
+    if (collision.gameObject.CompareTag("BackBoard")) _lastSide = "BackBoard";
     if (collision.gameObject.CompareTag("Floor"))
     {
-      if (_lastSide == "Guest")
+      ResetBall();
+      if (_lastSide == "BackBoard")
       {
         ScoreManager.AddScoreHome();
       }
@@ -82,16 +77,16 @@ public class BallPhysicsComponent : NetworkBehaviour
 
   public void ServeBall()
   {
-    // if (!IsOwner) return;
+    if (!IsOwner) return;
     _rigidbody.useGravity = true;
     _rigidbody.velocity = Vector3.up * _serveForce;
     ballState = BallState.Waiting;
   }
 
-  public void ResetBall(Vector3 position)
+  public void ResetBall()
   {
-    // if (!IsOwner) return;
-    transform.position = position;
+    if (!IsOwner) return;
+    transform.position = _initialPosition;
     _rigidbody.velocity = Vector3.zero;
     _rigidbody.angularVelocity = Vector3.zero;
     _rigidbody.useGravity = false;
