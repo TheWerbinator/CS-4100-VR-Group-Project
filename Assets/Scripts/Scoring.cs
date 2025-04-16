@@ -9,7 +9,7 @@ public class Scoring : NetworkBehaviour
     public enum LastTableSideHit { None, HostTable, ClientTable };
     private LastPaddleHit _lastPaddleHit = LastPaddleHit.None;
     private LastTableSideHit _lastTableSideHit = LastTableSideHit.None;
-    [SerializeField] private GameObject _hostSide, _clientSide, _hostPaddle, _clientPaddle, _netAirspace;
+    [SerializeField] private GameObject _hostSide, _clientSide, _hostPaddle, _clientPaddle;
 
     void OnCollisionEnter(Collision collision)
     {
@@ -20,16 +20,28 @@ public class Scoring : NetworkBehaviour
         if (collision.gameObject.CompareTag("Floor")) 
         {
             UpdateScore();
-            _lastPaddleHit = LastPaddleHit.None;
-            _lastTableSideHit = LastTableSideHit.None;
         }
     }
 
     void OnTriggerEnter(Collider other)
     {
         if (!IsOwner) return;
-        if (other == _hostSide) _lastTableSideHit = LastTableSideHit.HostTable;
-        if (other == _clientSide) _lastTableSideHit = LastTableSideHit.ClientTable;
+        if (other == _hostSide)
+        {
+            if (_lastTableSideHit == LastTableSideHit.HostTable)
+            {
+                UpdateScore();
+            }
+            _lastTableSideHit = LastTableSideHit.HostTable;
+        }
+        if (other == _clientSide)
+        {
+            if (_lastTableSideHit == LastTableSideHit.ClientTable)
+            {
+                UpdateScore();
+            }
+            _lastTableSideHit = LastTableSideHit.ClientTable;
+        }
     }
 
     void UpdateScore()
@@ -44,5 +56,7 @@ public class Scoring : NetworkBehaviour
         {
             GameManager.Instance.UpdateHostScore();
         }
+        _lastPaddleHit = LastPaddleHit.None;
+        _lastTableSideHit = LastTableSideHit.None;
     }
 }
