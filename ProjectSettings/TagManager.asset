@@ -7,7 +7,9 @@ TagManager:
   - Paddle
   - Floor
   - Anchor
-  - NetAirspace
+  - BackBoard
+  - Home
+  - Guest
   layers:
   - Default
   - TransparentFX
