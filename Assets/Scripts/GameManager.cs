@@ -8,8 +8,9 @@ public class GameManager : NetworkBehaviour
     public enum GameState { Inactive, Active, Paused, Ended }
     public GameState CurrentGameState = GameState.Inactive;
     public static GameManager Instance;
-    public GameObject BallPrefab;
+    public GameObject Ball;
     [SerializeField] private float _gameTimer;
+    private Rigidbody _ballRigidbody;
     private float _timer;
     private int _serveCounter, _hostScore, _clientScore = 0;
     [SerializeField] private Vector3 _hostServeLocation, _clientServeLocation;
@@ -18,16 +19,18 @@ public class GameManager : NetworkBehaviour
     void Awake()
     {
         Instance = this;
-        Instantiate(BallPrefab, _hostServeLocation, Quaternion.identity);
+        Ball.transform.position = _hostServeLocation;
+        _ballRigidbody = Ball.GetComponent<Rigidbody>();
         _timer = _gameTimer;
     }
 
     void Update()
     {
+        if (!IsOwner) return;
         if (CurrentGameState != GameState.Active) return;
         if (_timer <= 0)
         {
-            Destroy(BallPrefab);
+            ResetBall();
             UIManager.Instance.TimesUpPanel.SetActive(true);
             CurrentGameState = GameState.Ended;
         }
@@ -38,21 +41,31 @@ public class GameManager : NetworkBehaviour
         }
     }
 
-    public void InstantiateBall()
+    public void ResetBall()
     {
+        if (!IsOwner) return;
+        _ballRigidbody.linearVelocity = Vector3.zero;
+        _ballRigidbody.angularVelocity = Vector3.zero;
+        Ball.GetComponent<BallPhysicsComponent>().ballState = BallPhysicsComponent.BallState.Held;
         if (_hostScore >= 10 && _clientScore >= 10) _deuce = true;
         if (!_deuce)
         {
             if (_serveCounter >= 4) _serveCounter = 0;
-            if (_serveCounter < 2) Instantiate(BallPrefab, _hostServeLocation, Quaternion.identity);
-            else Instantiate(BallPrefab, _clientServeLocation, Quaternion.identity);
+            if (_serveCounter < 2) Ball.transform.position = _hostServeLocation;
+            else Ball.transform.position = _clientServeLocation;
         }
         else
         {
             if (_serveCounter >= 2) _serveCounter = 0;
-            if (_serveCounter < 1) Instantiate(BallPrefab, _hostServeLocation, Quaternion.identity);
-            else Instantiate(BallPrefab, _clientServeLocation, Quaternion.identity);
+            if (_serveCounter < 1) Ball.transform.position = _hostServeLocation;
+            else Ball.transform.position = _clientServeLocation;
         }
+    }
+
+    public void StartGame() 
+    {
+        if (!IsOwner) return;
+        CurrentGameState = GameState.Active;
     }
 
     public void UpdateHostScore() 
@@ -61,9 +74,8 @@ public class GameManager : NetworkBehaviour
         _serveCounter += 1;
         _hostScore += 1;
         UIManager.Instance.UpdateHostScore(_hostScore);
-        Destroy(BallPrefab);
+        ResetBall();
         CheckForWin();
-        InstantiateBall();
     }
     public void UpdateClientScore() 
     {
@@ -71,9 +83,14 @@ public class GameManager : NetworkBehaviour
         _serveCounter += 1;
         _clientScore += 1;
         UIManager.Instance.UpdateClientScore(_clientScore);
-        Destroy(BallPrefab);
+        ResetBall();
         CheckForWin();
-        InstantiateBall();
+    }
+
+    public void NoScore()
+    {
+        if (!IsOwner) return;
+        ResetBall();
     }
 
     public void CheckForWin()
@@ -82,13 +99,13 @@ public class GameManager : NetworkBehaviour
         if (_hostScore >= 11 && _hostScore - _clientScore >= 2) 
         {
             UIManager.Instance.HostWinsPanel.SetActive(true);
-            Destroy(BallPrefab);
+            ResetBall();
             CurrentGameState = GameState.Ended;
         }
         if (_clientScore >= 11 && _clientScore - _hostScore >= 2) 
         {
             UIManager.Instance.ClientWinsPanel.SetActive(true);
-            Destroy(BallPrefab);
+            ResetBall();
             CurrentGameState = GameState.Ended;
         }
     }
@@ -107,7 +124,7 @@ public class GameManager : NetworkBehaviour
         UIManager.Instance.TimesUpPanel.SetActive(false);
         UIManager.Instance.HostWinsPanel.SetActive(false);
         UIManager.Instance.ClientWinsPanel.SetActive(false);
-        InstantiateBall();
+        ResetBall();
         CurrentGameState = GameState.Active;
     }
 }

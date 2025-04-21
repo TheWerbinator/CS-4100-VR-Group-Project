@@ -4,7 +4,7 @@ using UnityEngine;
 using Unity.Netcode;
 using TMPro;
 
-public class UIManager : MonoBehaviour
+public class UIManager : NetworkBehaviour
 {
     public static UIManager Instance;
     public GameObject TimesUpPanel, HostWinsPanel, ClientWinsPanel;
@@ -13,7 +13,6 @@ public class UIManager : MonoBehaviour
     private void Awake()
     {
         Instance = this;
-        DontDestroyOnLoad(this);
         this.TimesUpPanel.SetActive(false);
         this.HostWinsPanel.SetActive(false);
         this.ClientWinsPanel.SetActive(false);
@@ -33,11 +32,11 @@ public class UIManager : MonoBehaviour
     public void JoinAsClient()
     {
         NetworkManager.Singleton.StartClient();
-        GameManager.Instance.CurrentGameState = GameManager.GameState.Active;
     }
 
-    public void UpdateTimer(float time)
+public void UpdateTimer(float time)
     {
+        if (!IsOwner) return;
         int minutes = (int)(time / 60);
         int seconds = (int)(time % 60);
         _timerText.text = minutes.ToString("00") + ":" + seconds.ToString("00");
@@ -45,11 +44,13 @@ public class UIManager : MonoBehaviour
 
     public void UpdateHostScore(int score)
     {
+        if (!IsOwner) return;
         _hostScoreText.text = score.ToString();
     }
 
     public void UpdateClientScore(int score)
     {
+        if (!IsOwner) return;
         _clientScoreText.text = score.ToString();
     }
 }

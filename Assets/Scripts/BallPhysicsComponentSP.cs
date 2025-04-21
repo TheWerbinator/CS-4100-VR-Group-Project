@@ -39,7 +39,7 @@ public class BallPhysicsComponentSP : NetworkBehaviour
 
   void FixedUpdate()
   {
-    if (ballState == BallState.Active && Vector3.Dot(_rigidbody.velocity, _opponentDirection) > 0)
+    if (ballState == BallState.Active && Vector3.Dot(_rigidbody.linearVelocity, _opponentDirection) > 0)
     {
       float correctiveForceX = -transform.position.z * assistStrength;
       Vector3 correctiveForce = new Vector3(correctiveForceX, 0, 0);
@@ -48,7 +48,7 @@ public class BallPhysicsComponentSP : NetworkBehaviour
   }
   void HoldBall()
   {
-    _rigidbody.velocity = Vector3.zero;
+    _rigidbody.linearVelocity = Vector3.zero;
     _rigidbody.useGravity = false;
 
     // if (controller button is pushed)
@@ -77,14 +77,14 @@ public class BallPhysicsComponentSP : NetworkBehaviour
   public void ServeBall()
   {
     _rigidbody.useGravity = true;
-    _rigidbody.velocity = Vector3.up * _serveForce;
+    _rigidbody.linearVelocity = Vector3.up * _serveForce;
     ballState = BallState.Waiting;
   }
 
   public void ResetBall()
   {
     transform.position = _initialPosition;
-    _rigidbody.velocity = Vector3.zero;
+    _rigidbody.linearVelocity = Vector3.zero;
     _rigidbody.angularVelocity = Vector3.zero;
     _rigidbody.useGravity = false;
     ballState = BallState.Held;

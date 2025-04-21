@@ -38,4 +38,19 @@ public class NetworkPlayer : NetworkBehaviour
             rightHand.rotation = VRRigReferences.Singleton.rightHand.rotation;
         }
     }
+
+    public void SetPlayer2Position()
+    {
+        if (IsOwner)
+        {
+            root.position = new Vector3(-VRRigReferences.Singleton.root.position.x, VRRigReferences.Singleton.root.position.y, VRRigReferences.Singleton.root.position.z);
+            root.rotation = Quaternion.Euler(0, 180, 0) * VRRigReferences.Singleton.root.rotation;
+            head.position = new Vector3(-VRRigReferences.Singleton.head.position.x, VRRigReferences.Singleton.head.position.y, VRRigReferences.Singleton.head.position.z);
+            head.rotation = Quaternion.Euler(0, 180, 0) * VRRigReferences.Singleton.head.rotation;
+            leftHand.position = new Vector3(-VRRigReferences.Singleton.leftHand.position.x, VRRigReferences.Singleton.leftHand.position.y, VRRigReferences.Singleton.leftHand.position.z);
+            leftHand.rotation = Quaternion.Euler(0, 180, 0) * VRRigReferences.Singleton.leftHand.rotation;
+            rightHand.position = new Vector3(-VRRigReferences.Singleton.rightHand.position.x, VRRigReferences.Singleton.rightHand.position.y, VRRigReferences.Singleton.rightHand.position.z);
+            rightHand.rotation = Quaternion.Euler(0, 180, 0) * VRRigReferences.Singleton.rightHand.rotation;
+        }
+    }
 }
