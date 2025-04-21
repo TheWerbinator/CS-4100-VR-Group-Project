@@ -41,8 +41,8 @@ public class BallPhysicsComponentSP : NetworkBehaviour
   {
     if (ballState == BallState.Active && Vector3.Dot(_rigidbody.velocity, _opponentDirection) > 0)
     {
-      float correctiveForceX = -transform.position.z * assistStrength;
-      Vector3 correctiveForce = new Vector3(correctiveForceX, 0, 0);
+      float correctiveForceZ = -transform.position.z * assistStrength;
+      Vector3 correctiveForce = new Vector3(correctiveForceZ, 0, 0);
       _rigidbody.AddForce(correctiveForce, ForceMode.Acceleration);
     }
   }
